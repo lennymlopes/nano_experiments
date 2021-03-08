@@ -55,7 +55,9 @@ This readme is only a quick and dirty hack, please notify me if you find any err
 
 
 ## Further Resources
-[Excellent article explaining the whole process](https://medium.com/the-nano-center/nano-esp8266-trigger-build-guide-f17f7a6517b2)
+[Excellent article explaining the whole process](https://medium.com/the-nano-center/nano-esp8266-trigger-build-guide-f17f7a6517b2) 
+
 [Nanos Integration Guides](https://docs.nano.org/integration-guides/the-basics/)
+
 [TFT_eSPI Documentation](https://github.com/Bodmer/TFT_eSPI)
 
