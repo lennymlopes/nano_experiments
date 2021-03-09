@@ -50,9 +50,7 @@ To select the right display, you have to comment the line `#include <User_Setup.
 Use [Nault](www.nault.cc) or your favorite wallet for testing.
 
 ## What to watch out for
-Right now, only amounts smaller than 1 Nano are displayed correctly. I might fix this in the future when i get around to it.
 This readme is only a quick and dirty hack, please notify me if you find any errors in the readme or the code!
-
 
 ## Further Resources
 [Excellent article explaining the whole process](https://medium.com/the-nano-center/nano-esp8266-trigger-build-guide-f17f7a6517b2) 
