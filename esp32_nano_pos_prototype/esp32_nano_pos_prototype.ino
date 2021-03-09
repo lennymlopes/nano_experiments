@@ -89,8 +89,9 @@ void loop() {
 void displayQR(){
   // generate qr
   uint8_t qrcodeData[qrcode_getBufferSize(5)]; 
-  qrcode_initText(&qrcode, qrcodeData, 5, 0, "nano://nano_15f3d5yo8xghqfqd8694wr57x551xfxid1ywwp1jreirrn33t8yiptoxoipb?amount=0x0D3C21BCECCEDA1000000");  // https://nanoo.tools/unit-converter
-
+  //qrcode_initText(&qrcode, qrcodeData, 5, 0, "nano://nano_15f3d5yo8xghqfqd8694wr57x551xfxid1ywwp1jreirrn33t8yiptoxoipb?amount=0x0D3C21BCECCEDA1000000");  // https://nanoo.tools/unit-converter
+  qrcode_initText(&qrcode, qrcodeData, 5, 0, "nano://nano_15f3d5yo8xghqfqd8694wr57x551xfxid1ywwp1jreirrn33t8yiptoxoipb");
+  
   // wipe screen
   tft.fillScreen(TFT_BLACK);
   
@@ -130,28 +131,39 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       String block_amount = rx_doc["amount"];
 
       Serial.println(block_amount);
-      
-      // DISCLAIMER: ONLY DISPLAYS AMOUNTS SMALLER THEN 1 NANO CORRECTLY 
-      // TODO: implement larger amounts
-      
-      //-- convert raw to nano -- shitty solution, feedback appreciated
-      int lastIndex = block_amount.length() - 24;
-      
 
-      String nano_amount = "0.";
-
-      for(int i = 0; i < 30-block_amount.length(); i++){
-        nano_amount.concat("0");
+      const int raw_length = 31;
+      int diff = raw_length - block_amount.length();
+      String nano_amount = "";
+      
+      if(diff>0) {
+        // amounts smaller than 1 nano
+        nano_amount = "0.";
+        for(int i = 0; i< diff-1; i++){
+          nano_amount += "0";
+        }
+        nano_amount += block_amount;
+      } else if (diff == 0) {
+        // 1 to 9 nano
+        nano_amount = block_amount[0];
+        nano_amount += ".";
+        nano_amount += block_amount.substring(1);
+      } else {
+        // more than 9 nano
+        Serial.println((-diff)-1);
+        nano_amount = block_amount.substring(0, (-diff)+1);
+        nano_amount += ".";
+        nano_amount += block_amount.substring((-diff)+1);
       }
-      
-      block_amount.remove(lastIndex);
-      nano_amount.concat(block_amount);
+
       Serial.println(nano_amount);
       
       tft.setCursor(5, 155);
       tft.println(F("received"));
       tft.setCursor(5, 175);
-      tft.println(nano_amount);
+
+      // float, decimals, x, y, fontsize
+      tft.drawFloat( nano_amount.toFloat(), 6, 5, 175, 1);
 
       delay(5000);
       tft.fillRect(0, 155, 135, 200, TFT_BLACK);

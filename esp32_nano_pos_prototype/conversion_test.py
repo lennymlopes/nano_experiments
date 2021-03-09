@@ -1,7 +1,6 @@
 
 def raw_to_nano(raw_amount):
 	raw = "1000000000000000000000000000000"
-
 	diff = len(raw)-len(raw_amount)
 
 	if(diff>0):
