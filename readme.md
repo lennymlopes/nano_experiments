@@ -7,6 +7,7 @@ This repository is intended to be a collection of experiments with the [Nano](ww
 For now, the following projects are part of this repository:
 
 - [Arduino Point of Sale Prototype](arduino/readme.md)
+- [ESP-IDF hello-world example](esp-idf/hello-world/readme.md)
 
 See the project folder for descriptions.
 
