@@ -29,7 +29,31 @@ StaticJsonDocument<1024> rx_doc;
 //-- init qr code --------------------
 QRCode qrcode;
 
+//-- interrupt-based display brightness -----
+volatile int count;    // Trigger 
+int totalInterrupts;   // counts the number of triggering of the alarm
+#define TFT_BL 4      // display backlight pin
+#define BRIGHTNESS 50 // brightness in percent
+
+hw_timer_t * timer = NULL;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
+void IRAM_ATTR onTime() {
+   count++;
+}
+
 void setup()   {
+
+//-- set up interrupts for display brightness
+  // Configure the Prescaler at 80 the quarter of the ESP32 is cadence at 80Mhz
+  // 80000000 / 80 = 1000000 tics / seconde
+  timer = timerBegin(0, 80, true);                
+  timerAttachInterrupt(timer, &onTime, true);    
+  
+  // Sets an alarm to sound every microsecond
+  timerAlarmWrite(timer, 1000, true);           
+  timerAlarmEnable(timer);
+  
 //-- display setup -------------------
   tft.init();
   tft.setRotation(24);
@@ -76,12 +100,7 @@ void setup()   {
 
 void loop() {
   webSocket.loop();
-  
-  // hacky display brightness, todo: ISR Timer PWM
-  digitalWrite(TFT_BL, 0);
-  delay(2);
-  digitalWrite(TFT_BL, 1);
-  delay(1);
+  dimDisplay(BRIGHTNESS);
   
 }
 
@@ -169,5 +188,17 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
       tft.fillRect(0, 155, 135, 200, TFT_BLACK);
       break;
 
+  }
+}
+
+void dimDisplay(int brightness) {
+  if (count > 0) {
+     count--;
+     totalInterrupts++;
+     if ( totalInterrupts%(100/brightness) == 0) {
+       digitalWrite(TFT_BL, HIGH);
+     } else {
+       digitalWrite(TFT_BL, LOW);
+     }
   }
 }
